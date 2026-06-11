@@ -29,6 +29,7 @@ import (
 	"sync/atomic"
 	"testing"
 
+	"github.com/andybalholm/brotli"
 	"github.com/klauspost/compress/zstd"
 	"github.com/stretchr/testify/assert"
 )
@@ -69,6 +70,10 @@ func TestDecompressingWriter_SuccessCases(t *testing.T) {
 		{"big zstd", ECompressionType.ZStd(), 10 * 1024 * 1024, rand.Intn(1024*1024) + 1},
 		{"sml zstd", ECompressionType.ZStd(), 1024, rand.Intn(1024*1024) + 1},
 		{"1bytzstd", ECompressionType.ZStd(), 1234, 1},
+
+		{"big brotli", ECompressionType.Brotli(), 10 * 1024 * 1024, rand.Intn(1024*1024) + 1},
+		{"sml brotli", ECompressionType.Brotli(), 1024, rand.Intn(1024*1024) + 1},
+		{"1bytbrotli", ECompressionType.Brotli(), 1234, 1},
 	}
 
 	for _, cs := range cases {
@@ -100,6 +105,7 @@ func TestDecompressingWriter_EarlyClose(t *testing.T) {
 		ECompressionType.GZip(),
 		ECompressionType.ZLib(),
 		ECompressionType.ZStd(),
+		ECompressionType.Brotli(),
 	}
 	for _, tp := range cases {
 		// given:
@@ -140,6 +146,8 @@ func getTestData(a *assert.Assertions, tp CompressionType, originalSize int) (or
 		a.Nil(err)
 	case ECompressionType.ZLib():
 		comp = zlib.NewWriter(compBuf)
+	case ECompressionType.Brotli():
+		comp = brotli.NewWriter(compBuf)
 	default:
 		a.FailNow("unexpected compression type")
 		return originalData, nil
