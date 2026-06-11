@@ -1648,6 +1648,7 @@ func (CompressionType) None() CompressionType        { return CompressionType(0)
 func (CompressionType) ZLib() CompressionType        { return CompressionType(1) }
 func (CompressionType) GZip() CompressionType        { return CompressionType(2) }
 func (CompressionType) ZStd() CompressionType        { return CompressionType(3) }
+func (CompressionType) Brotli() CompressionType      { return CompressionType(4) }
 func (CompressionType) Unsupported() CompressionType { return CompressionType(255) }
 
 func (ct CompressionType) String() string {
@@ -1664,6 +1665,8 @@ func GetCompressionType(contentEncoding string) (CompressionType, error) {
 		return ECompressionType.ZLib(), nil
 	case "zstd":
 		return ECompressionType.ZStd(), nil
+	case "br":
+		return ECompressionType.Brotli(), nil
 	default:
 		return ECompressionType.Unsupported(), fmt.Errorf("encoding type '%s' is not recognised as a supported encoding type for auto-decompression", contentEncoding)
 	}

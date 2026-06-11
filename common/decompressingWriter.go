@@ -27,6 +27,7 @@ import (
 	"io"
 	"time"
 
+	"github.com/andybalholm/brotli"
 	"github.com/klauspost/compress/zstd"
 )
 
@@ -70,6 +71,8 @@ func (d decompressingWriter) decompressorFactory(tp CompressionType, preader *io
 			return nil, err
 		}
 		return dec.IOReadCloser(), nil
+	case ECompressionType.Brotli():
+		return io.NopCloser(brotli.NewReader(preader)), nil
 	default:
 		return nil, errors.New("unexpected compression type")
 	}
